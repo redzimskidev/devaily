@@ -1,0 +1,91 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://backend:4000
+      - NEXT_PUBLIC_KEYCLOAK_URL=http://keycloak:8080
+    depends_on:
+      backend:
+        condition: service_started
+    networks:
+      - devaily-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/devaily
+      - KEYCLOAK_URL=http://keycloak:8080
+      - KEYCLOAK_REALM=devaily
+      - KEYCLOAK_CLIENT_ID=backend
+      - KEYCLOAK_CLIENT_SECRET=your_client_secret
+    depends_on:
+      postgres:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+    networks:
+      - devaily-network
+
+
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=devaily
+      - POSTGRES_MULTIPLE_DATABASES=keycloak
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./docker-postgresql-multiple-databases.sh:/docker-entrypoint-initdb.d/docker-postgresql-multiple-databases.sh
+    networks:
+      - devaily-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0.4
+    restart: unless-stopped
+    command: 
+      - "start-dev"
+    ports:
+      - "8080:8080"
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_DB=postgres
+      - KC_DB_URL=jdbc:postgresql://postgres:5432/keycloak
+      - KC_DB_USERNAME=postgres
+      - KC_DB_PASSWORD=postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - devaily-network
+
+networks:
+  devaily-network:
+    driver: bridge
+
+volumes:
+  postgres-data: 
