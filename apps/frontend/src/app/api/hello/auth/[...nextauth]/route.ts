@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth';
 import KeycloakProvider from 'next-auth/providers/keycloak';
+
 import { getEnvVariable } from '@/utils/env';
 
 export const {

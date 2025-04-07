@@ -7,7 +7,7 @@ services:
       dockerfile: apps/frontend/Dockerfile
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=http://backend:4000
@@ -24,7 +24,7 @@ services:
       dockerfile: apps/backend/Dockerfile
     restart: unless-stopped
     ports:
-      - "4000:4000"
+      - '4000:4000'
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/devaily
@@ -40,12 +40,11 @@ services:
     networks:
       - devaily-network
 
-
   postgres:
     image: postgres:15-alpine
     restart: unless-stopped
     ports:
-      - "5432:5432"
+      - '5432:5432'
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -57,7 +56,7 @@ services:
     networks:
       - devaily-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 5s
       timeout: 5s
       retries: 5
@@ -66,10 +65,10 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:22.0.4
     restart: unless-stopped
-    command: 
-      - "start-dev"
+    command:
+      - 'start-dev'
     ports:
-      - "8080:8080"
+      - '8080:8080'
     environment:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
@@ -88,4 +87,4 @@ networks:
     driver: bridge
 
 volumes:
-  postgres-data: 
+  postgres-data:

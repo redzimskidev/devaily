@@ -2,7 +2,7 @@ import './global.css';
 
 export const metadata = {
   title: 'Devaily',
-  description: 'The developer\'s daily homepage',
+  description: "The developer's daily homepage",
 };
 
 export default function RootLayout({
