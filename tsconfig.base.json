@@ -15,7 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@devaily/shared": ["libs/shared/src/index.ts"]
+      "@devaily/shared": ["libs/shared/src/index.ts"],
+      "@devaily/shared/ui": ["libs/shared/ui/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
